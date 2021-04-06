@@ -29,3 +29,17 @@ app.get('/posts', async (req, res) => {
     const posts = await Post.find()
     res.render('posts', {posts, user:req.session.user})
 })
+
+app.get('/posts/create', (req,res) => {
+    if (!req.session.user) return res.redirect('/?message=로그인을 한 후 글을 작성해주세요')
+    res.render('createPost')
+})
+
+app.get('/posts/:postId', async (req,res) =>{
+    const postId = req.params.postId
+    const post = await Post.findOneAndUpdate({_id:postId}, {$inc: {hit:1}}, {new: true})
+    res.render('postDetail', {post,user:req.session.user})
+})
+app.get('/registry', (req,res) => {
+    res.render('registry')
+})
