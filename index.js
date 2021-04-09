@@ -40,6 +40,58 @@ app.get('/posts/:postId', async (req,res) =>{
     const post = await Post.findOneAndUpdate({_id:postId}, {$inc: {hit:1}}, {new: true})
     res.render('postDetail', {post,user:req.session.user})
 })
+
 app.get('/registry', (req,res) => {
     res.render('registry')
 })
+
+app.post('/posts', (req,res) => {
+    if (!req.session.user) return res.redirect('/')
+
+    const {body: {id, pw } } = req
+    //
+    const epw = crypto.createHash('sha512').update(id +'digitech' + pw + '!^*(sd').digest('base64')
+    const data = await User.findOne({id, pw: epw})
+    if(data) {
+        req.session.user = data
+        res.redirect('/')
+    }else{
+        res.send('로그인에 (실패) 하셨습니다')
+    }
+})
+
+// 원래는 페이지를 보여주는 API 이기 때문에 get으로 해야됨
+app.put('/posts/:postId', async (req, res) => {
+    const postId = req.params.postId
+    const post = await Post.findOne({ _id: postId })
+    res.render('updatePost', { post })
+  })
+  
+  app.put('/posts/:postId/update', async (req, res) => {
+    const postId = req.params.postId
+    const { body: { title, content } } = req
+    await Post.updateOne({ _id: postId }, { title, content })
+    res.redirect(`/posts/${postId}`)
+  })
+  
+  app.post('/posts/:postId/comments', async (req, res) => {
+    const postId = req.params.postId
+    const writer = req.session.user._id
+    const { body: { content } } = req
+    await Post.updateOne({ _id: postId }, { $push: { comments: { content, writer } } })
+    res.redirect(`/posts/${postId}`)
+  })
+  
+  app.delete('/posts/:postId/comments/:commentId', async (req, res) => {
+    const { params: { postId, commentId } } = req
+  
+    await Post.updateOne({ _id: postId }, { $pull: { comments: { _id: commentId } } })
+  
+    res.redirect(`/posts/${postId}`)
+  })
+  
+  app.delete('/posts/:postId', async (req, res) => {
+    const postId = req.params.postId
+    await Post.deleteOne({ _id: postId })
+    res.redirect('/posts')
+  })
