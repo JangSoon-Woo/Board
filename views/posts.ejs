@@ -1,26 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="kr">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/public/css/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-    <div class="wrap">
-        <div class="post-wrap">
-            <h1>게시판</h1>
-            <ul>
-                <% posts.forEach((post, i) => { %>
-                    <a href="/posts/<%= post._id%>">
-                        <li><%= (i + 1 %> | <%= post.title %> | <%= post.createAt %></li>
-                    </a>
-                <% }) %>
-            </ul>
-            <br />
-            <a href="/posts/create"><button>새로운 게시물</button></a>
-        </div>
+  <div class='wrap'>
+    <div class="post-wrap">
+      <h1>게시판</h1>
+      <ul>
+          <% posts.forEach((post, i) => { %>
+            <a href='/posts/<%= post._id %>'>
+              <li><%= (i + 1) %> | <%= post.title %> | <%= post.createAt %> </li>
+            </a>
+          <% }) %>
+      </ul>
+      <br />
+      <a href='/posts/create'><button>새로운 게시물</button></a>
     </div>
+  </div>
 </body>
 </html>
